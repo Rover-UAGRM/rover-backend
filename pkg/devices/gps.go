@@ -10,13 +10,25 @@ import (
 
 //Gps : Estructura que contiene datos del gps
 type Gps struct {
+	Name     string
 	Device   string
 	Baudrate int
+	File     string
 	port     *serial.Port
 
 	Hour   int
 	Minute int
 	Sec    int
+}
+
+//GetName function
+func (gps *Gps) GetName() string {
+	return gps.Name
+}
+
+//GetFilePath function
+func (gps *Gps) GetFilePath() string {
+	return gps.File
 }
 
 //Init : Inicializa
