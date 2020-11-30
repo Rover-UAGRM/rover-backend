@@ -7,15 +7,15 @@ import (
 	"time"
 )
 
-// JSONAble interface
-type JSONAble interface {
+// Device interface
+type Device interface {
 	Init() error
 	GetFilePath() string
 	GetName() string
 }
 
 // WritingToJSON function
-func WritingToJSON(device JSONAble) {
+func WritingToJSON(device Device) {
 	if err := device.Init(); err != nil {
 		log.Println("Error al iniciar el dispositivo:", device.GetName())
 	}

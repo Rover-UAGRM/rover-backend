@@ -5,14 +5,19 @@ import (
 	"./pkg/devices"
 )
 
-func main() {
+type devs pkg.Device
 
-	gps := devices.Gps{
+var dvs = []devs{
+	&devices.Gps{
 		Name:     "GPS Neo 6m",
 		Device:   "/uart",
 		Baudrate: 115200,
 		File:     "data.gps.json",
-	}
+	},
+}
 
-	pkg.WritingToJSON(&gps)
+func main() {
+	for _, device := range dvs {
+		go pkg.WritingToJSON(device)
+	}
 }
