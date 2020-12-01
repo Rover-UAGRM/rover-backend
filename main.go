@@ -5,9 +5,9 @@ import (
 	"./pkg/devices"
 )
 
-type devs pkg.Device
+type devs []pkg.Device
 
-var dvs = []devs{
+var dvs = devs{
 	&devices.Gps{
 		Name:     "GPS Neo 6m",
 		Device:   "/uart",
