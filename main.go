@@ -1,7 +1,7 @@
 package main
 
 import (
-	"time"
+	"sync"
 
 	"./pkg"
 	"./pkg/devices"
@@ -18,9 +18,13 @@ var dvs = devs{
 	},
 }
 
+var wg sync.WaitGroup
+
 func main() {
 	for _, device := range dvs {
+		wg.Add(1)
 		go pkg.WritingToJSON(device)
 	}
-	time.Sleep(5000 * time.Millisecond)
+	wg.Wait()
+	// time.Sleep(5000 * time.Millisecond)
 }
