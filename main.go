@@ -26,5 +26,4 @@ func main() {
 		go pkg.WritingToJSON(device)
 	}
 	wg.Wait()
-	// time.Sleep(5000 * time.Millisecond)
 }
