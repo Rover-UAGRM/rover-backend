@@ -25,6 +25,8 @@ func WritingToJSON(device Device) {
 	}
 	encoder := json.NewEncoder(jsonFile)
 	for {
+		jsonFile.Truncate(0)
+		jsonFile.Seek(0, 0)
 		if err = encoder.Encode(device); err != nil {
 			log.Println("Error al codificar:", err)
 		}
