@@ -16,9 +16,9 @@ type Gps struct {
 	File     string `json:"-"`
 	port     *serial.Port
 
-	Hour   int
-	Minute int
-	Sec    int
+	Hour int
+	Min  int
+	Sec  int
 }
 
 //GetName function
@@ -48,18 +48,17 @@ func (gps *Gps) Init() error {
 func (gps *Gps) reading() {
 	var nmeaString string
 	for {
+		nmeaString = ""
 		_, err := fmt.Fscanln(gps.port, &nmeaString)
 		if err != nil {
 			log.Println("Error Escaneo:", err)
-			nmeaString = ""
 			continue
 		}
 
 		if strings.Contains(nmeaString, "$GPRMC") {
-			_, err = fmt.Sscanf(nmeaString, "$GPRMC,%2d%2d%2d.", &gps.Hour, &gps.Minute, &gps.Sec)
+			_, err = fmt.Sscanf(nmeaString, "$GPRMC,%2d%2d%2d.", &gps.Hour, &gps.Min, &gps.Sec)
 			if err != nil {
 				log.Println("Error GPRMC:", err)
-				nmeaString = ""
 				continue
 			}
 		}
