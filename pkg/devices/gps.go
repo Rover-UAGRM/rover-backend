@@ -11,9 +11,9 @@ import (
 //Gps : Estructura que contiene datos del gps
 type Gps struct {
 	Name     string
-	Device   string
-	Baudrate int
-	File     string
+	Device   string `json:"-"`
+	Baudrate int    `json:"-"`
+	File     string `json:"-"`
 	port     *serial.Port
 
 	Hour   int
