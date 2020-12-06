@@ -14,7 +14,7 @@ var dvs = devs{
 		Name:     "GPS Neo 6m",
 		Device:   "/dev/ttyS0",
 		Baudrate: 115200,
-		File:     "data.gps.json",
+		File:     "assets/data.gps.json",
 	},
 }
 
