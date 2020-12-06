@@ -25,11 +25,15 @@ func WritingToJSON(device Device) {
 	}
 	encoder := json.NewEncoder(jsonFile)
 	for {
-		jsonFile.Truncate(0)
-		jsonFile.Seek(0, 0)
+		deleteFile(jsonFile)
 		if err = encoder.Encode(device); err != nil {
 			log.Println("Error al codificar:", err)
 		}
 		time.Sleep(1000 * time.Millisecond)
 	}
+}
+
+func deleteFile(file *os.File) {
+	file.Truncate(0)
+	file.Seek(0, 0)
 }
