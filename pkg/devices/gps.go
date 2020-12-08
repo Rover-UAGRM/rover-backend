@@ -1,9 +1,11 @@
 package devices
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"math"
+	"os"
 	"strings"
 
 	"github.com/tarm/serial"
@@ -15,6 +17,8 @@ type Gps struct {
 	Device   string `json:"-"`
 	Baudrate int    `json:"-"`
 	File     string `json:"-"`
+	Log      string `json:"-"`
+	logger   *log.Logger
 	port     *serial.Port
 
 	Hour, Min, Sec   int
@@ -38,13 +42,34 @@ func (gps *Gps) GetFilePath() string {
 	return gps.File
 }
 
+//InitLogger function
+func (gps *Gps) initLogger() error {
+	if gps.Log != "" {
+		logFile, err := os.OpenFile(gps.Log, os.O_RDWR|os.O_CREATE, os.ModePerm)
+		if err != nil {
+			return err
+		}
+		gps.logger = log.New(logFile, "Logger: ", log.Llongfile)
+		return err
+	} else {
+		return errors.New("Not found log path")
+	}
+}
+
+//LogPrintln function
+func (gps *Gps) LogPrintln(v ...interface{}) {
+	gps.logger.Println(v...)
+}
+
 //Init : Inicializa
 func (gps *Gps) Init() error {
-	var err error
+	err := gps.initLogger()
+	if err != nil {
+		return err
+	}
 	c := &serial.Config{Name: gps.Device, Baud: gps.Baudrate}
 	gps.port, err = serial.OpenPort(c)
 	if err != nil {
-		log.Fatal(err)
 		return err
 	}
 	go gps.reading()
@@ -58,12 +83,11 @@ func (gps *Gps) reading() {
 		nmeaString = ""
 		_, err := fmt.Fscanln(gps.port, &nmeaString)
 		if err != nil {
-			log.Println("Error Escaneo:", err)
+			gps.logger.Println("Error Escaneo:", err)
 			continue
 		}
 
 		if strings.Contains(nmeaString, "$GPRMC") {
-
 			_, err = fmt.Sscanf(nmeaString, "$GPRMC,%2d%2d%2d.%2d,%c,%f,%c,%f,%c,%f,,%2d%2d%2d,",
 				&gps.Hour, &gps.Min, &gps.Sec,
 				&intValue,
@@ -73,7 +97,7 @@ func (gps *Gps) reading() {
 				&floatValue,
 				&gps.Day, &gps.Month, &gps.Year)
 			if err != nil {
-				log.Println("Error GPRMC:", err)
+				gps.logger.Println("Error GPRMC:", err)
 				continue
 			}
 			gps.Latitud = convertDegMinToDecDeg(gps.latitud)

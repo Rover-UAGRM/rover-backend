@@ -12,6 +12,7 @@ type Device interface {
 	Init() error
 	GetFilePath() string
 	GetName() string
+	LogPrintln(v ...interface{})
 }
 
 // WritingToJSON function
@@ -21,13 +22,13 @@ func WritingToJSON(device Device) {
 	}
 	jsonFile, err := os.OpenFile(device.GetFilePath(), os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
-		log.Println("Error al abrir archivo:", err)
+		device.LogPrintln("Error al abrir archivo:", err)
 	}
 	encoder := json.NewEncoder(jsonFile)
 	for {
 		deleteFile(jsonFile)
 		if err = encoder.Encode(device); err != nil {
-			log.Println("Error al codificar:", err)
+			device.LogPrintln("Error al codificar:", err)
 		}
 		time.Sleep(1000 * time.Millisecond)
 	}
