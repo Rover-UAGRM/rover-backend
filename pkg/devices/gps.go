@@ -83,7 +83,7 @@ func (gps *Gps) reading() {
 		nmeaString = ""
 		_, err := fmt.Fscanln(gps.port, &nmeaString)
 		if err != nil {
-			gps.logger.Println("Error Escaneo:", err)
+			gps.LogPrintln("Error Escaneo:", err)
 			continue
 		}
 
@@ -97,7 +97,7 @@ func (gps *Gps) reading() {
 				&floatValue,
 				&gps.Day, &gps.Month, &gps.Year)
 			if err != nil {
-				gps.logger.Println("Error GPRMC:", err)
+				gps.LogPrintln("Error GPRMC:", err)
 				continue
 			}
 			gps.Latitud = convertDegMinToDecDeg(gps.latitud)
