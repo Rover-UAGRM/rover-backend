@@ -15,6 +15,7 @@ var dvs = devs{
 		Device:   "/dev/ttyS0",
 		Baudrate: 115200,
 		File:     "assets/data.gps.json",
+		Log:      "gps.log",
 	},
 }
 
