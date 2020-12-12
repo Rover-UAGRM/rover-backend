@@ -24,7 +24,7 @@ var dvs = devs{
 var wg sync.WaitGroup
 
 func main() {
-	go execCommand("http-server")
+	go execCommand("php", "-S", "192.168.0.14:3000")
 	for _, device := range dvs {
 		wg.Add(1)
 		go pkg.WritingToJSON(device)
@@ -32,8 +32,8 @@ func main() {
 	wg.Wait()
 }
 
-func execCommand(cmdString string) {
-	cmd := exec.Command(cmdString)
+func execCommand(name string, args ...string) {
+	cmd := exec.Command(name, args...)
 	err := cmd.Run()
 	if err != nil {
 		log.Fatal(err)
