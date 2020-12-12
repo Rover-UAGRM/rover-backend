@@ -24,13 +24,20 @@ type Gps struct {
 	Hour, Min, Sec   int
 	Day, Month, Year int
 
-	Status, ns, ew    byte
-	latitud, longitud float64
-	Latitud, Longitud float64
+	Status, ns, ew      byte
+	latitud, longitud   float64
+	Latitude, Longitude float64
+
+	Speed float64
+
+	NroSats int
+
+	Height float64
 }
 
 var intValue int
 var floatValue float64
+var charValue byte
 
 //GetName function
 func (gps *Gps) GetName() string {
@@ -49,7 +56,7 @@ func (gps *Gps) initLogger() error {
 		if err != nil {
 			return err
 		}
-		gps.logger = log.New(logFile, "Logger: ", log.Llongfile)
+		gps.logger = log.New(logFile, "Log: ", log.LstdFlags)
 		return err
 	} else {
 		return errors.New("Not found log path")
@@ -100,18 +107,49 @@ func (gps *Gps) reading() {
 				gps.LogPrintln("Error GPRMC:", err)
 				continue
 			}
-			gps.Latitud = convertDegMinToDecDeg(gps.latitud)
-			gps.Longitud = convertDegMinToDecDeg(gps.longitud)
+			gps.Latitude = convertDegMinToDecDeg(gps.latitud)
+			gps.Longitude = convertDegMinToDecDeg(gps.longitud)
 
 			if gps.ns == 'S' {
-				gps.Latitud *= -1
+				gps.Latitude *= -1
 			}
 
 			if gps.ew == 'W' {
-				gps.Longitud *= -1
+				gps.Longitude *= -1
 			}
 		}
 
+		if strings.Contains(nmeaString, "$GPVTG") {
+			_, err = fmt.Sscanf(nmeaString, "$GPVTG,,%c,,%c,%f,%c,%f",
+				&charValue, &charValue, &floatValue, &charValue,
+				&gps.Speed)
+			if err != nil {
+				gps.LogPrintln("Error GPVTG:", err)
+				continue
+			}
+			gps.Speed = roundTo(gps.Speed, 0)
+		}
+
+		if strings.Contains(nmeaString, "$GPGSV") {
+			_, err = fmt.Sscanf(nmeaString, "$GPGSV,%d,%d,%d",
+				&intValue, &intValue,
+				&gps.NroSats)
+			if err != nil {
+				gps.LogPrintln("Error GPGSV:", err)
+				continue
+			}
+		}
+
+		if strings.Contains(nmeaString, "$GPGGA") {
+			_, err = fmt.Sscanf(nmeaString, "$GPGGA,%f,%f,%c,%f,%c,%c,%d,%f,%f",
+				&floatValue, &floatValue, &charValue, &floatValue, &charValue, &charValue, &intValue, &floatValue,
+				&gps.Height)
+			if err != nil {
+				gps.LogPrintln("Error GPGGA:", err)
+				continue
+			}
+			gps.Height = roundTo(gps.Height, 0)
+		}
 	}
 }
 

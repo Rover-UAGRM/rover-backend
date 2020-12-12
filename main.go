@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+	"os/exec"
 	"sync"
 
 	"./pkg"
@@ -22,9 +24,18 @@ var dvs = devs{
 var wg sync.WaitGroup
 
 func main() {
+	go execCommand("http-server")
 	for _, device := range dvs {
 		wg.Add(1)
 		go pkg.WritingToJSON(device)
 	}
 	wg.Wait()
+}
+
+func execCommand(cmdString string) {
+	cmd := exec.Command(cmdString)
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
