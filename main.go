@@ -20,11 +20,12 @@ var dvs = devs{
 		Log:      "gps.log",
 	},
 	&devices.Bme280{
-		Name:    "Bme 280",
-		Device:  "/dev/i2c-1",
-		Address: 0x76,
-		File:    "assets/data.bme.json",
-		Log:     "bme.log",
+		Name:         "Bme 280",
+		Device:       "/dev/i2c-1",
+		SamplingTime: 250,
+		Address:      0x76,
+		File:         "assets/data.bme.json",
+		Log:          "bme.log",
 	},
 }
 
@@ -34,7 +35,7 @@ func main() {
 	go execCommand("php", "-S", "192.168.0.14:3000")
 	for _, device := range dvs {
 		wg.Add(1)
-		go pkg.WritingToJSON(device)
+		go pkg.WritingToJSON(device, 500)
 	}
 	wg.Wait()
 }

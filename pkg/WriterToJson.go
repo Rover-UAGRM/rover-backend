@@ -16,7 +16,7 @@ type Device interface {
 }
 
 // WritingToJSON function
-func WritingToJSON(device Device) {
+func WritingToJSON(device Device, duration time.Duration) {
 	if err := device.Init(); err != nil {
 		log.Println("Error al iniciar el dispositivo:", device.GetName())
 	}
@@ -26,15 +26,15 @@ func WritingToJSON(device Device) {
 	}
 	encoder := json.NewEncoder(jsonFile)
 	for {
-		deleteFile(jsonFile)
+		cleanUpFile(jsonFile)
 		if err = encoder.Encode(device); err != nil {
 			device.LogPrintln("Error al codificar:", err)
 		}
-		time.Sleep(1000 * time.Millisecond)
+		time.Sleep(duration * time.Millisecond)
 	}
 }
 
-func deleteFile(file *os.File) {
+func cleanUpFile(file *os.File) {
 	file.Truncate(0)
 	file.Seek(0, 0)
 }

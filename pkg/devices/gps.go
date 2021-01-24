@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"strings"
 
@@ -32,7 +31,7 @@ type Gps struct {
 
 	NroSats int
 
-	Height float64
+	Altitude float64
 }
 
 var intValue int
@@ -143,25 +142,12 @@ func (gps *Gps) reading() {
 		if strings.Contains(nmeaString, "$GPGGA") {
 			_, err = fmt.Sscanf(nmeaString, "$GPGGA,%f,%f,%c,%f,%c,%c,%d,%f,%f",
 				&floatValue, &floatValue, &charValue, &floatValue, &charValue, &charValue, &intValue, &floatValue,
-				&gps.Height)
+				&gps.Altitude)
 			if err != nil {
 				gps.LogPrintln("Error GPGGA:", err)
 				continue
 			}
-			gps.Height = roundTo(gps.Height, 0)
+			gps.Altitude = roundTo(gps.Altitude, 0)
 		}
 	}
-}
-
-func convertDegMinToDecDeg(degMin float64) float64 {
-	min := 0.0
-	decDeg := 0.0
-	min = math.Mod(degMin, 100)
-	degMinInt := int(degMin) / 100
-	decDeg = float64(degMinInt) + (min / 60)
-	return roundTo(decDeg, 6)
-}
-
-func roundTo(n float64, decimals uint32) float64 {
-	return math.Round(n*math.Pow(10, float64(decimals))) / math.Pow(10, float64(decimals))
 }

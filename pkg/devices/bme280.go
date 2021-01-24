@@ -11,17 +11,21 @@ import (
 	"github.com/quhar/bme280"
 )
 
+//SeaLevelPressureHpa Presion a Nivel del Mar
+const SeaLevelPressureHpa float64 = 1013.25
+
 //Bme280 : Estructura que contiene datos del sensor de presion
 type Bme280 struct {
-	Name      string
-	Address   int    `json:"-"`
-	Device    string `json:"-"`
-	File      string `json:"-"`
-	Log       string `json:"-"`
-	logger    *log.Logger
-	devReader *bme280.BME280
+	Name         string
+	SamplingTime time.Duration `json:"-"`
+	Address      int           `json:"-"`
+	Device       string        `json:"-"`
+	File         string        `json:"-"`
+	Log          string        `json:"-"`
+	logger       *log.Logger
+	devReader    *bme280.BME280
 
-	Temperature, Pressure, Humidity float64
+	Temperature, Pressure, Humidity, Altitude float64
 }
 
 //GetName function
@@ -85,7 +89,8 @@ func (bme *Bme280) reading() {
 		bme.Temperature = roundTo(t, 0)
 		bme.Pressure = roundTo(p, 2)
 		bme.Humidity = roundTo(h, 0)
+		bme.Altitude = readAltitude(SeaLevelPressureHpa, bme.Pressure)
 
-		time.Sleep(250 * time.Millisecond)
+		time.Sleep(bme.SamplingTime * time.Millisecond)
 	}
 }
