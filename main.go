@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"os/exec"
 	"sync"
@@ -9,9 +11,9 @@ import (
 	"./pkg/devices"
 )
 
-type devs []pkg.Device
+type deviceListType []pkg.Device
 
-var dvs = devs{
+var deviceList = deviceListType{
 	&devices.Gps{
 		Name:     "GPS Neo 6m",
 		Device:   "/dev/ttyS0",
@@ -32,10 +34,16 @@ var dvs = devs{
 var wg sync.WaitGroup
 
 func main() {
-	go execCommand("php", "-S", "192.168.0.14:3000")
-	for _, device := range dvs {
+
+	host := flag.String("host", "127.0.0.1", "Host address")
+	port := flag.String("port", "3000", "Usage Port")
+	// mode := flag.String("mode", "tx", "Rover Modality")
+	flag.Parse()
+
+	go execCommand("php", "-S", fmt.Sprintf("%s:%s", *host, *port))
+	for _, device := range deviceList {
 		wg.Add(1)
-		go pkg.WritingToJSON(device, 500)
+		go pkg.WritingToJSON(device, 1000)
 	}
 	wg.Wait()
 }
