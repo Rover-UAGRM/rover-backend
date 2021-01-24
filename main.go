@@ -19,6 +19,13 @@ var dvs = devs{
 		File:     "assets/data.gps.json",
 		Log:      "gps.log",
 	},
+	&devices.Bme280{
+		Name:    "Bme 280",
+		Device:  "/dev/i2c-1",
+		Address: 0x76,
+		File:    "assets/data.bme.json",
+		Log:     "bme.log",
+	},
 }
 
 var wg sync.WaitGroup
